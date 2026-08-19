@@ -54,6 +54,13 @@ manifest.json, icon.svg, sw.js    Minimal PWA support (installable, works offlin
 3. Push to `main` — the included workflow (`.github/workflows/deploy.yml`)
    publishes the repo as-is, with no build step.
 
+The one thing the workflow does touch is `sw.js`: it holds a `%VERSION%`
+placeholder in its cache name, which the deploy stamps with the short commit
+SHA. Each deploy therefore gets its own cache (`nervous-glossary-<sha>`), and
+the service worker deletes the previous one when it activates — so returning
+visitors pick up the new code instead of being served stale cached assets.
+Served straight from the repo locally, the placeholder is simply left alone.
+
 ## Notes
 
 - Term edits are stored in the browser's `localStorage`, per-device. There's
