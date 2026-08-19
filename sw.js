@@ -1,4 +1,7 @@
-const CACHE = "nervous-glossary-v1";
+// %VERSION% is stamped with the commit SHA by .github/workflows/deploy.yml, so
+// each deploy gets a distinct cache that evicts the previous one on activate.
+// Served straight from the repo (local dev) the placeholder is left as-is.
+const CACHE = "nervous-glossary-%VERSION%";
 const ASSETS = [
   "./",
   "./index.html",

@@ -27,7 +27,17 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      # No build step: the repo is served as-is.
+      # No build step, but sw.js carries a %VERSION% placeholder so its cache
+      # name changes with every deploy — otherwise a returning visitor keeps
+      # serving the old cached assets. grep first so a renamed placeholder
+      # fails the deploy rather than silently shipping a static cache name.
+      - name: Stamp service worker version
+        run: |
+          grep -q '%VERSION%' sw.js
+          sed -i "s/%VERSION%/${GITHUB_SHA::7}/g" sw.js
+          grep '^const CACHE' sw.js
+
+      # Otherwise the repo is served as-is.
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
