@@ -1,0 +1,13 @@
+{
+  "name": "Nervous System Glossary",
+  "short_name": "NS Glossary",
+  "description": "An interactive, editable glossary of nervous system terms for biology students.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0A0E16",
+  "theme_color": "#0A0E16",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

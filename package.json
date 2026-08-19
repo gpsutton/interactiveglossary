@@ -1,0 +1,13 @@
+{
+  "name": "nervous-system-glossary",
+  "version": "1.0.0",
+  "description": "A build-step-free, editable glossary of nervous system terms for biology students.",
+  "type": "module",
+  "scripts": {
+    "serve": "serve ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "license": "MIT"
+}
