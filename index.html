@@ -1,11 +1,27 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-theme="light" data-bs-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nervous System Glossary</title>
   <meta name="description" content="An interactive, editable glossary of nervous system terms for biology students." />
-  <meta name="theme-color" content="#0A0E16" />
+  <meta name="theme-color" content="#FFFFFF" />
+
+  <!-- Applies a saved theme preference before first paint, avoiding a flash
+       of the wrong theme. Light mode is the default when nothing is saved. -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("nervous-glossary:theme");
+        if (saved === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+          document.documentElement.setAttribute("data-bs-theme", "dark");
+        }
+      } catch (e) {
+        /* storage unavailable — light mode default already set in the html tag */
+      }
+    })();
+  </script>
 
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./icon.svg" />

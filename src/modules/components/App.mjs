@@ -1,5 +1,7 @@
 import { state, addTerm, updateTerm, deleteTerm } from "../services/data.mjs";
+import { themeState, toggleTheme } from "../services/theme.mjs";
 import { CATEGORY_COLORS, colorForCategory } from "../content/terms.mjs";
+import { setDiagramTheme } from "../content/diagrams.mjs";
 import NeuralHero from "./NeuralHero.mjs";
 import TermRow from "./TermRow.mjs";
 import AddTermForm from "./AddTermForm.mjs";
@@ -11,12 +13,16 @@ export default {
   data() {
     return {
       state,
+      themeState,
       query: "",
       activeId: null,
       showAdd: false,
     };
   },
   computed: {
+    isDark() {
+      return this.themeState.isDark;
+    },
     knownCategories() {
       const fromTerms = state.terms.map((t) => t.category);
       return [...new Set([...Object.keys(CATEGORY_COLORS), ...fromTerms])];
@@ -39,8 +45,23 @@ export default {
       return state.terms.find((t) => t.id === this.activeId) || null;
     },
   },
+  watch: {
+    isDark: {
+      immediate: true,
+      handler(isDark) {
+        // Diagram SVGs are generated strings (see content/diagrams.mjs),
+        // so their annotation colors are flipped here rather than via CSS.
+        setDiagramTheme(isDark);
+        if (typeof document !== "undefined") {
+          document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+          document.documentElement.setAttribute("data-bs-theme", isDark ? "dark" : "light");
+        }
+      },
+    },
+  },
   methods: {
     colorForCategory,
+    toggleTheme,
     openTerm(id) {
       this.activeId = id;
     },
@@ -64,6 +85,11 @@ export default {
       <datalist id="nsg-categories">
         <option v-for="cat in knownCategories" :key="cat" :value="cat" />
       </datalist>
+
+      <button class="theme-toggle" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+        <i :class="isDark ? 'ti ti-sun' : 'ti ti-moon'"></i>
+        {{ isDark ? 'Light mode' : 'Dark mode' }}
+      </button>
 
       <header class="glossary-header">
         <div class="header-top">
@@ -108,7 +134,7 @@ export default {
 
         <section v-for="cat in Object.keys(grouped)" :key="cat" class="category-block">
           <div class="category-heading">
-            <span class="category-dot" :style="{ background: colorForCategory(cat) }"></span>
+            <span class="category-dot" :style="{ background: colorForCategory(cat, isDark) }"></span>
             {{ cat }}
             <span class="category-count">{{ grouped[cat].length }}</span>
           </div>
@@ -119,6 +145,7 @@ export default {
               :key="t.id"
               :term="t"
               :categories="knownCategories"
+              :is-dark="isDark"
               @open="openTerm"
               @update="handleUpdate"
               @delete="handleDelete"
@@ -127,7 +154,7 @@ export default {
         </section>
       </main>
 
-      <TermBubble :term="active" @close="closeTerm" />
+      <TermBubble :term="active" :is-dark="isDark" @close="closeTerm" />
     </div>
   `,
 };
