@@ -1,26 +1,88 @@
 /* ---------------------------------------------------------
-   PALETTE
-   bg     #0A0E16  deep synaptic space
-   mint   #7DF9C4  Cells & Structures
-   violet #B79CFF  Divisions
-   amber  #FFB25E  Signals & Function
+   THEME
+   Light (default): white bg, dark blue text (#4472C4, bold for
+     headings/terms), every diagram/icon drawn in dark red.
+   Dark (original scheme): deep space bg, light text, each
+     category's diagrams/icons colored mint / violet / amber.
+   Toggle sets [data-theme] on <html>; everything below reads
+   the resulting CSS variables. Diagram SVG strings (generated
+   in JS — see content/diagrams.mjs) are colored separately
+   since they're plain markup, not CSS.
 --------------------------------------------------------- */
-:root {
+:root,
+[data-theme="light"] {
+  --nsg-bg: #ffffff;
+  --nsg-surface: #f6f7fb;
+  --nsg-surface-hover: #eceff7;
+  --nsg-diagram-wrap-bg: #f6f7fb;
+  --nsg-border: #dadfea;
+  --nsg-border-strong: #c7cedd;
+  --nsg-row-border: #dadfea;
+  --nsg-input-bg: #ffffff;
+  --nsg-text: #4472c4;
+  --nsg-text-soft: #4472c4;
+  --nsg-text-faint: #8b96ae;
+  --nsg-overlay: rgba(68, 114, 196, 0.8);
+  --nsg-bubble-bg: #ffffff;
+  --nsg-bubble-border: #dadfea;
+  --nsg-bubble-shadow: 0 30px 90px rgba(22, 38, 75, 0.35);
+  --nsg-bubble-def: #4472c4;
+  --nsg-primary-bg: #4472c4;
+  --nsg-primary-text: #ffffff;
+  --nsg-cancel-bg: #f6f7fb;
+  --nsg-cancel-text: #4472c4;
+  --nsg-cancel-border: #dadfea;
+  --nsg-toggle-bg: #f6f7fb;
+  --nsg-toggle-text: #4472c4;
+  --nsg-toggle-border: #dadfea;
+  --nsg-danger: #8a1f2e;
+  --nsg-accent: #8a1f2e;
+  --nsg-hero-line: #c7cedd;
+  --nsg-hero-spark: #8a1f2e;
+  --nsg-hero-node-fill: #ffffff;
+  --nsg-hero-node-stroke: #4472c4;
+  --nsg-row-term-weight: 700;
+}
+
+[data-theme="dark"] {
   --nsg-bg: #0a0e16;
   --nsg-surface: #12161f;
-  --nsg-line: #232b38;
-  --nsg-text-hi: #edeff4;
-  --nsg-text-lo: #8891a5;
-  --nsg-mint: #7df9c4;
-  --nsg-violet: #b79cff;
-  --nsg-amber: #ffb25e;
-  --nsg-coral: #ff6b6b;
+  --nsg-surface-hover: #171e2b;
+  --nsg-diagram-wrap-bg: #0e1219;
+  --nsg-border: #232b38;
+  --nsg-border-strong: #2a3444;
+  --nsg-row-border: #1b2230;
+  --nsg-input-bg: #0e1219;
+  --nsg-text: #edeff4;
+  --nsg-text-soft: #8891a5;
+  --nsg-text-faint: #4b5468;
+  --nsg-overlay: rgba(5, 7, 11, 0.8);
+  --nsg-bubble-bg: linear-gradient(180deg, #151b27, #10141d);
+  --nsg-bubble-border: #2a3444;
+  --nsg-bubble-shadow: 0 30px 90px rgba(0, 0, 0, 0.75);
+  --nsg-bubble-def: #c7ccd8;
+  --nsg-primary-bg: #7df9c4;
+  --nsg-primary-text: #0a0e16;
+  --nsg-cancel-bg: #1b2432;
+  --nsg-cancel-text: #edeff4;
+  --nsg-cancel-border: #2a3444;
+  --nsg-toggle-bg: #12161f;
+  --nsg-toggle-text: #edeff4;
+  --nsg-toggle-border: #232b38;
+  --nsg-danger: #ff6b6b;
+  --nsg-accent: #7df9c4;
+  --nsg-hero-line: #2a3444;
+  --nsg-hero-spark: #7df9c4;
+  --nsg-hero-node-fill: #0a0e16;
+  --nsg-hero-node-stroke: #b79cff;
+  --nsg-row-term-weight: 600;
 }
 
 body {
   background: var(--nsg-bg);
-  color: var(--nsg-text-hi);
+  color: var(--nsg-text);
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 /* ---------------------------------------------------------
@@ -28,7 +90,31 @@ body {
 --------------------------------------------------------- */
 .glossary-page {
   min-height: 100%;
+  position: relative;
   padding: 28px 22px 60px;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 28px;
+  right: 22px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--nsg-toggle-bg);
+  color: var(--nsg-toggle-text);
+  border: 1px solid var(--nsg-toggle-border);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.theme-toggle:hover {
+  transform: translateY(-1px);
 }
 
 .glossary-header {
@@ -42,6 +128,7 @@ body {
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
+  padding-right: 130px;
 }
 
 .glossary-title {
@@ -50,10 +137,12 @@ body {
   font-weight: 700;
   margin: 0;
   letter-spacing: -0.01em;
+  color: var(--nsg-text);
 }
 
 .glossary-subtitle {
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text);
+  font-weight: 400;
   margin-top: 8px;
   font-size: 14.5px;
   max-width: 480px;
@@ -71,7 +160,7 @@ body {
   align-items: center;
   gap: 8px;
   background: var(--nsg-surface);
-  border: 1px solid var(--nsg-line);
+  border: 1px solid var(--nsg-border);
   border-radius: 10px;
   padding: 9px 14px;
   flex: 1;
@@ -82,7 +171,7 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  color: var(--nsg-text-hi);
+  color: var(--nsg-text);
   font-size: 14px;
   width: 100%;
   font-family: "Inter", sans-serif;
@@ -96,22 +185,26 @@ body {
   padding: 9px 16px;
   font-size: 14px;
   font-weight: 600;
+  transition: transform 0.15s ease;
+}
+.add-btn:hover {
+  transform: translateY(-1px);
 }
 .add-btn-primary {
-  background: var(--nsg-mint);
-  color: var(--nsg-bg);
-  border-color: var(--nsg-mint);
+  background: var(--nsg-primary-bg);
+  color: var(--nsg-primary-text);
+  border-color: var(--nsg-primary-bg);
 }
 .add-btn-cancel {
-  background: #1b2432;
-  color: var(--nsg-text-hi);
-  border-color: var(--nsg-line);
+  background: var(--nsg-cancel-bg);
+  color: var(--nsg-cancel-text);
+  border-color: var(--nsg-cancel-border);
 }
 
 .add-panel {
   margin-top: 14px;
   background: var(--nsg-surface);
-  border: 1px solid var(--nsg-line);
+  border: 1px solid var(--nsg-border);
   border-radius: 12px;
   padding: 16px;
   animation: nsgFadeUp 0.2s ease;
@@ -129,7 +222,7 @@ body {
 }
 
 .empty-state {
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text);
   font-size: 14px;
   padding: 30px 4px;
 }
@@ -145,7 +238,7 @@ body {
   font-family: "JetBrains Mono", monospace;
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text-soft);
   margin-bottom: 10px;
   text-transform: uppercase;
 }
@@ -156,7 +249,7 @@ body {
   display: inline-block;
 }
 .category-count {
-  color: #4b5468;
+  color: var(--nsg-text-faint);
   margin-left: 2px;
 }
 
@@ -164,6 +257,22 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--nsg-surface);
+  border: 1px solid var(--nsg-row-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.row:hover {
+  background: var(--nsg-surface-hover);
+  border-color: var(--nsg-border-strong);
 }
 
 .row-click-area {
@@ -184,7 +293,7 @@ body {
   height: 40px;
   border-radius: 10px;
   border: 1px solid;
-  background: #0e1219;
+  background: var(--nsg-input-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -194,12 +303,13 @@ body {
 
 .row-term {
   font-family: "Space Grotesk", sans-serif;
-  font-weight: 600;
+  font-weight: var(--nsg-row-term-weight);
   font-size: 15px;
-  color: var(--nsg-text-hi);
+  color: var(--nsg-text);
 }
 .row-snippet {
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text-soft);
+  font-weight: 400;
   font-size: 12.5px;
   margin-top: 2px;
   overflow: hidden;
@@ -208,21 +318,29 @@ body {
   max-width: 480px;
 }
 
+.row-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
 .icon-btn {
   background: transparent;
   border: none;
   border-radius: 7px;
   padding: 7px;
   cursor: pointer;
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text-soft);
   transition: transform 0.15s ease, background 0.15s ease;
+  display: flex;
 }
 .icon-btn:hover {
   transform: scale(1.08);
 }
 .icon-btn-danger {
-  background: rgba(255, 107, 107, 0.13);
-  color: var(--nsg-coral);
+  background: color-mix(in srgb, var(--nsg-danger) 13%, transparent);
+  color: var(--nsg-danger);
 }
 
 /* ---------------------------------------------------------
@@ -231,7 +349,7 @@ body {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 7, 11, 0.8);
+  background: var(--nsg-overlay);
   backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
@@ -249,15 +367,15 @@ body {
 
 .bubble {
   position: relative;
-  background: linear-gradient(180deg, #151b27, #10141d);
-  border: 1px solid var(--nsg-line);
+  background: var(--nsg-bubble-bg);
+  border: 1px solid var(--nsg-bubble-border);
   border-radius: 26px;
   padding: 40px 44px 36px;
   max-width: 640px;
   width: 100%;
   max-height: 88vh;
   overflow-y: auto;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.75);
+  box-shadow: var(--nsg-bubble-shadow);
   animation: nsgFadeUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -269,7 +387,7 @@ body {
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text-soft);
   font-size: 20px;
 }
 
@@ -278,7 +396,7 @@ body {
   height: 260px;
   border-radius: 18px;
   border: 1px solid;
-  background: #0e1219;
+  background: var(--nsg-diagram-wrap-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -300,10 +418,12 @@ body {
   font-weight: 700;
   text-align: center;
   margin: 8px 0 16px;
+  color: var(--nsg-text);
 }
 
 .bubble-def {
-  color: #c7ccd8;
+  color: var(--nsg-bubble-def);
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.65;
   text-align: center;
@@ -314,18 +434,18 @@ body {
 .bubble-example {
   display: flex;
   gap: 9px;
-  background: #0e1219;
-  border: 1px solid var(--nsg-line);
+  background: var(--nsg-surface);
+  border: 1px solid var(--nsg-border);
   border-radius: 12px;
   padding: 13px 15px;
   margin-top: 20px;
   font-size: 13.5px;
-  color: var(--nsg-text-lo);
+  color: var(--nsg-text-soft);
   font-style: italic;
   line-height: 1.55;
 }
 .bubble-example i {
-  color: var(--nsg-amber);
+  color: var(--nsg-accent);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -338,18 +458,18 @@ body {
   opacity: 0.9;
 }
 .nsg-hero-edges line {
-  stroke: #2a3444;
+  stroke: var(--nsg-hero-line);
   stroke-width: 1.5;
 }
 .nsg-spark {
-  fill: var(--nsg-mint);
+  fill: var(--nsg-hero-spark);
   animation-name: nsgTravel;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 .nsg-node {
-  fill: var(--nsg-bg);
-  stroke: var(--nsg-violet);
+  fill: var(--nsg-hero-node-fill);
+  stroke: var(--nsg-hero-node-stroke);
   stroke-width: 2;
   animation-name: nsgPulse;
   animation-duration: 2.6s;
@@ -381,5 +501,8 @@ body {
 @media (max-width: 640px) {
   .add-grid {
     grid-template-columns: 1fr;
+  }
+  .header-top {
+    padding-right: 0;
   }
 }

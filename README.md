@@ -5,6 +5,9 @@ students. Click a term to see a larger, labeled diagram and definition.
 Terms can be added, edited, or deleted right in the browser — changes are
 saved to `localStorage` so they persist between visits on the same device.
 
+Includes a light/dark mode toggle (top right) — light mode is the default,
+and the choice is remembered per device.
+
 Built on [andrewbridge/vue-spa-template](https://github.com/andrewbridge/vue-spa-template):
 no build step, no bundler — just Vue 3 and [goober](https://goober.js.org/)
 loaded via an import map, with [Tabler](https://tabler.io/) for base UI.
@@ -31,6 +34,7 @@ src/
     deps.mjs                      Centralised third-party imports (vue, goober)
     services/
       data.mjs                    Reactive term store + localStorage persistence
+      theme.mjs                   Light/dark mode state + localStorage persistence
     content/
       terms.mjs                   Seed term data + category colour helpers
       icons.mjs                   Small icons used in the term list

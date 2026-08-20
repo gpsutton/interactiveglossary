@@ -14,6 +14,7 @@ const ASSETS = [
   "./src/modules/content/icons.mjs",
   "./src/modules/content/diagrams.mjs",
   "./src/modules/services/data.mjs",
+  "./src/modules/services/theme.mjs",
   "./src/modules/components/App.mjs",
   "./src/modules/components/NeuralHero.mjs",
   "./src/modules/components/TermRow.mjs",

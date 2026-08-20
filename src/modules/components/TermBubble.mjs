@@ -1,4 +1,4 @@
-import { colorForCategory } from "../content/terms.mjs";
+import { colorForCategory, diagramColorForCategory } from "../content/terms.mjs";
 import { ICONS } from "../content/icons.mjs";
 import { DIAGRAMS } from "../content/diagrams.mjs";
 
@@ -6,18 +6,25 @@ export default {
   name: "TermBubble",
   props: {
     term: { type: Object, default: null },
+    isDark: { type: Boolean, default: false },
   },
   emits: ["close"],
   computed: {
-    color() {
-      return this.term ? colorForCategory(this.term.category) : "#7DF9C4";
+    // Category color: used for the wrap border/glow and the small kicker tag.
+    tagColor() {
+      return this.term ? colorForCategory(this.term.category, this.isDark) : "#8A1F2E";
+    },
+    // Diagram content color: fixed dark red in light mode, category-colored
+    // in dark mode (the original scheme).
+    diagramColor() {
+      return this.term ? diagramColorForCategory(this.term.category, this.isDark) : "#8A1F2E";
     },
     diagramMarkup() {
       if (!this.term) return "";
       const diagramFn = DIAGRAMS[this.term.id];
       const iconFn = ICONS[this.term.icon];
       const fn = diagramFn || iconFn;
-      return fn ? fn(this.color) : "";
+      return fn ? fn(this.diagramColor) : "";
     },
   },
   template: /* html */ `
@@ -27,9 +34,9 @@ export default {
           <i class="ti ti-x"></i>
         </button>
 
-        <div class="bubble-diagram-wrap" :style="{ borderColor: color + '55', boxShadow: '0 0 60px ' + color + '22' }" v-html="diagramMarkup"></div>
+        <div class="bubble-diagram-wrap" :style="{ borderColor: tagColor + '55', boxShadow: '0 0 60px ' + tagColor + '22' }" v-html="diagramMarkup"></div>
 
-        <div class="bubble-tag" :style="{ color: color }">{{ term.category }}</div>
+        <div class="bubble-tag" :style="{ color: tagColor }">{{ term.category }}</div>
         <h2 class="bubble-title">{{ term.term }}</h2>
         <p class="bubble-def">{{ term.definition }}</p>
 

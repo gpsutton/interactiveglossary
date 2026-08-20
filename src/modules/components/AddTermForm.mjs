@@ -36,7 +36,7 @@ export default {
       <textarea class="form-control form-control-sm mb-2" rows="2" v-model="draft.definition" placeholder="Definition"></textarea>
       <textarea class="form-control form-control-sm mb-2" rows="2" v-model="draft.example" placeholder="Example sentence (optional)"></textarea>
       <div style="display: flex; justify-content: flex-end;">
-        <button class="btn btn-sm" style="background: var(--nsg-mint); color: #0a0e16; border-color: var(--nsg-mint);" @click="submit">
+        <button class="btn btn-sm add-btn add-btn-primary" @click="submit">
           <i class="ti ti-check"></i> Save term
         </button>
       </div>

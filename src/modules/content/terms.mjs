@@ -8,20 +8,43 @@
  * @property {string} [example]
  */
 
-export const CATEGORY_COLORS = {
+export const CATEGORY_COLORS_LIGHT = {
+  "Cells & Structures": "#1B3A6B",
+  "Divisions": "#8A1F2E",
+  "Signals & Function": "#5C2A46",
+};
+const FALLBACK_COLORS_LIGHT = ["#1B3A6B", "#8A1F2E", "#5C2A46", "#3E5C8A", "#A63A46"];
+
+export const CATEGORY_COLORS_DARK = {
   "Cells & Structures": "#7DF9C4",
   "Divisions": "#B79CFF",
   "Signals & Function": "#FFB25E",
 };
+const FALLBACK_COLORS_DARK = ["#7DF9C4", "#B79CFF", "#FFB25E", "#6FD3FF", "#FF9CD4"];
 
-const FALLBACK_COLORS = ["#7DF9C4", "#B79CFF", "#FFB25E", "#6FD3FF", "#FF9CD4"];
+// Category *names* are theme-independent — used for the "add term" datalist.
+export const CATEGORY_COLORS = CATEGORY_COLORS_LIGHT;
 
-/** @type {(category: string) => string} */
-export function colorForCategory(category) {
-  if (CATEGORY_COLORS[category]) return CATEGORY_COLORS[category];
+export const DIAGRAM_RED = "#8A1F2E";
+
+/** @type {(category: string, isDark: boolean) => string} */
+export function colorForCategory(category, isDark) {
+  const map = isDark ? CATEGORY_COLORS_DARK : CATEGORY_COLORS_LIGHT;
+  const fallback = isDark ? FALLBACK_COLORS_DARK : FALLBACK_COLORS_LIGHT;
+  if (map[category]) return map[category];
   let hash = 0;
   for (let i = 0; i < category.length; i++) hash = (hash * 31 + category.charCodeAt(i)) >>> 0;
-  return FALLBACK_COLORS[hash % FALLBACK_COLORS.length];
+  return fallback[hash % fallback.length];
+}
+
+/**
+ * In light mode every diagram/icon is drawn in a single fixed dark red,
+ * regardless of category. In dark mode (the original scheme) each
+ * category keeps its own accent (mint / violet / amber).
+ * @type {(category: string, isDark: boolean) => string}
+ */
+export function diagramColorForCategory(category, isDark) {
+  return isDark ? colorForCategory(category, isDark) : DIAGRAM_RED;
 }
 
 /** @type {Term[]} */
